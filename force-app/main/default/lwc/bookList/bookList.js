@@ -1,4 +1,4 @@
-import { LightningElement, wire, track, api } from 'lwc'; // <-- 1. ДОБАВЬ 'api'
+import { LightningElement, wire, track, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 
