@@ -1,0 +1,200 @@
+<template>
+    <lightning-card title="Library Manager" icon-name="standard:books">
+        <div class="slds-var-p-around_medium">
+            <lightning-layout horizontal-align="space" multiple-rows="true">
+                
+                <lightning-layout-item padding="around-small">
+                    <lightning-button 
+                        label="Add Book" 
+                        variant="brand" 
+                        icon-name="utility:add"
+                        onclick={handleAddBook}>
+                    </lightning-button>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <lightning-button 
+                        label="Add Author" 
+                        variant="brand-outline" 
+                        icon-name="utility:user"
+                        onclick={handleAddAuthor}>
+                    </lightning-button>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <lightning-button 
+                        label="Delete Author" 
+                        variant="destructive-text" 
+                        icon-name="utility:warning"
+                        onclick={handleDeleteAuthor}>
+                    </lightning-button>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <lightning-button 
+                        label="Export Books" 
+                        variant="neutral" 
+                        icon-name="utility:download"
+                        onclick={handleExportClick}>
+                    </lightning-button>
+                </lightning-layout-item>
+
+            </lightning-layout>
+        </div>
+    </lightning-card>
+    <br>
+    <c-book-list class="slds-var-m-top_medium"></c-book-list>
+
+    <template if:true={isAddAuthorModalOpen}>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={handleModalClose}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title slds-text-heading_medium">Add New Authors</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <template for:each={authorsToCreate} for:item="author">
+                        <div key={author.tempId} class="slds-grid slds-gutters slds-var-m-bottom_small slds-border_bottom slds-var-p-bottom_small">
+                            <div class="slds-col slds-size_4-of-12">
+                                <lightning-input label="Name" name="Name" value={author.Name} data-id={author.tempId} onchange={handleAuthorChange} required></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-input label="Pseudonyms" name="Pseudonyms__c" value={author.Pseudonyms__c} data-id={author.tempId} onchange={handleAuthorChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-input type="date" label="Date of Birth" name="Date_of_Birth__c" value={author.Date_of_Birth__c} data-id={author.tempId} onchange={handleAuthorChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_2-of-12 slds-align-bottom">
+                                <lightning-button-icon icon-name="utility:delete" variant="border-filled" alternative-text="Remove row" title="Remove row" data-id={author.tempId} onclick={handleRemoveAuthorRow} class="slds-var-m-left_small slds-var-m-top_large"></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <lightning-button label="Add Another Author" icon-name="utility:add" onclick={handleAddAuthorRow}></lightning-button>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleModalClose}></lightning-button>
+                    <lightning-button label="Save Authors" variant="brand" onclick={handleSaveAuthors} class="slds-var-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+    </template>
+
+    <template if:true={isAddBookModalOpen}>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={handleModalClose}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title slds-text-heading_medium">Add New Books</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <template for:each={booksToCreate} for:item="book">
+                        <div key={book.tempId} class="slds-grid slds-gutters slds-var-m-bottom_small slds-border_bottom slds-var-p-bottom_small">
+                            
+                            <div class="slds-col slds-size_4-of-12">
+                                <lightning-input
+                                    label="Name"
+                                    name="Name"
+                                    value={book.Name}
+                                    data-id={book.tempId}
+                                    onchange={handleBookChange} 
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_4-of-12">
+                                <lightning-record-picker
+                                    label="Author"
+                                    name="Author__c"
+                                    placeholder="Search Authors..."
+                                    object-api-name="Author__c"
+                                    data-id={book.tempId}
+                                    onchange={handleBookChange}
+                                    required>
+                                </lightning-record-picker>
+                            </div>
+                            <div class="slds-col slds-size_3-of-12">
+                                <lightning-combobox
+                                    label="Genre"
+                                    name="Book_Genre__c"
+                                    value={book.Book_Genre__c}
+                                    placeholder="Select Genre..."
+                                    options={genreOptions}
+                                    data-id={book.tempId}
+                                    onchange={handleBookChange} 
+                                >
+                                </lightning-combobox>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-12 slds-align-bottom">
+                                <lightning-button-icon
+                                    icon-name="utility:delete"
+                                    variant="border-filled"
+                                    alternative-text="Remove row"
+                                    title="Remove row"
+                                    data-id={book.tempId}
+                                    onclick={handleRemoveBookRow}
+                                    class="slds-var-m-left_small slds-var-m-top_large">
+                                </lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                    <lightning-button label="Add Another Book" icon-name="utility:add" onclick={handleAddBookRow}></lightning-button>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleModalClose}></lightning-button>
+                    <lightning-button label="Save Books" variant="brand" onclick={handleSaveBooks} class="slds-var-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+    </template>
+
+    <template if:true={isDeleteAuthorModalOpen}>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={handleModalClose}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title slds-text-heading_medium">Delete Author and All Their Books</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <p class="slds-var-m-bottom_small">
+                        Select the Author you wish to delete. 
+                        <strong>Warning:</strong> This will also permanently delete all books associated with this author. This action cannot be undone.
+                    </p>
+                    <lightning-record-picker
+                        label="Author to Delete"
+                        placeholder="Search Authors..."
+                        object-api-name="Author__c"
+                        onchange={handleAuthorToDeleteChange}
+                        required>
+                    </lightning-record-picker>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleModalClose}></lightning-button>
+                    <lightning-button 
+                        label="Delete Author and Books" 
+                        variant="destructive" 
+                        onclick={handleConfirmDeleteAuthor} 
+                        class="slds-var-m-left_x-small"
+                        disabled={isDeleteButtonDisabled}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+    </template>
+
+</template>

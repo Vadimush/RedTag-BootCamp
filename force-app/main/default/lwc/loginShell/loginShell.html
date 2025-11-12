@@ -1,0 +1,72 @@
+<template>
+    <!-- Logged in -->
+    <template if:true={isLoggedIn}>
+      <div class="slds-var-p-around_medium">
+  
+        <div class="slds-grid slds-grid_align-spread slds-var-m-bottom_small">
+          <div class="slds-text-title_bold">Welcome, {displayName}</div>
+          <lightning-button variant="destructive-text"
+                            label="Log out"
+                            onclick={handleLogout}>
+          </lightning-button>
+        </div>
+        
+        <!-- Main app -->
+         <c-library-manager></c-library-manager>
+
+      </div>
+    </template>
+  
+    <!-- Logged out -->
+    <template if:false={isLoggedIn}>
+      <div class="slds-var-p-around_medium
+                  slds-var-m-around_large
+                  slds-theme_default
+                  slds-border_top
+                  slds-border_bottom
+                  slds-border_left
+                  slds-border_right">
+  
+        <div class="slds-text-heading_small slds-var-m-bottom_small">{formTitle}</div>
+  
+        <lightning-input
+          type="text"
+          label="Username"
+          value={username}
+          onchange={handleUsername}
+          required>
+        </lightning-input>
+  
+        <lightning-input
+          type="password"
+          class="slds-var-m-top_x-small"
+          label="Password"
+          value={password}
+          onchange={handlePassword}
+          required>
+        </lightning-input>
+  
+        <template if:true={isSignUp}>
+          <lightning-input
+            type="text"
+            class="slds-var-m-top_x-small"
+            label="Display name (optional)"
+            value={displayNameInput}
+            onchange={handleDisplayName}>
+          </lightning-input>
+        </template>
+  
+        <div class="slds-var-m-top_small slds-grid">
+          <lightning-button variant="brand" label={primaryCta} onclick={handleSubmit}></lightning-button>
+          <div class="slds-var-m-left_small">
+            <lightning-button label={switchCta} onclick={toggleMode}></lightning-button>
+          </div>
+        </div>
+  
+        <template if:true={error}>
+          <div class="slds-text-color_error slds-var-m-top_x-small">{error}</div>
+        </template>
+  
+      </div>
+    </template>
+  </template>
